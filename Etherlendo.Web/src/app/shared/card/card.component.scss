@@ -1,0 +1,27 @@
+.card {
+    height: 435px;
+
+    .card-body {
+        max-height: 200px;
+        transition: max-height 0.15s ease-out;
+        overflow: hidden;
+    }
+
+    .card-img-top {
+        object-fit: cover;
+        height: 250px;
+        transition: height 0.25s ease-in;
+        overflow: hidden;
+    }    
+}
+
+.card:hover {
+    .card-body {
+        max-height: 300px;
+        transition: max-height 0.25s ease-in;
+    }
+    .card-img-top {
+        height: 150px;
+        transition: height 0.25s ease-out;
+    }
+}

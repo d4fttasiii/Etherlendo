@@ -1,0 +1,16 @@
+<div class="card shadow-lg">
+  <div class="card-header">
+    <h5>{{ title }}</h5>
+  </div>
+  <img class="card-img-top" [src]="image" alt="Card image cap">
+  <div class="card-body">
+    <p class="card-text">{{ description | cardify }}</p>
+    <hr />
+    <div class="text-right">
+      <button type="button" class="btn btn-primary" (click)="invest()">
+        <i class="fas fa-search-plus"></i>
+        <span class="ml-1">Details</span>
+      </button>
+    </div>
+  </div>
+</div>

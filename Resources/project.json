@@ -1,0 +1,36 @@
+[
+    {
+        "_index": "projectindex",
+        "_type": "project",
+        "_id": "AWZO48DQpkTq_dXhsXK0",
+        "_score": 1,
+        "_source": {
+            "name": "HAVOC",
+            "description": "Venus is an important destination for future space exploration endeavors, however, it presents a unique set of challenges. Though its internal geology is similar to Earth’s. Its surface is hot enough to melt lead and is covered with craters, volcanoes, mountains, and lava plains.",
+            "image": "https://sacd.larc.nasa.gov/files/2016/06/havoc_slider.png"
+        }
+    },
+    {
+        "_index": "projectindex",
+        "_type": "project",
+        "_id": "AWZO2UJvpkTq_dXhsXKy",
+        "_score": 1,
+        "_source": {
+            "name": "Mars ONE",
+            "description": "Mars One aims to establish a permanent human settlement on Mars. Several unmanned missions will be completed, establishing a habitable settlement before carefully selected and trained crews will depart to Mars. Funding and implementing this plan will not be easy, it will be hard. The Mars One team, with its advisers and with established aerospace companies, will evaluate and mitigate risks and identify and overcome difficulties step by step. Mars One is a global initiative whose goal is to make this everyone’s mission to Mars, including yours. If we all work together, we can do this. We’re going to Mars. Come along!",
+            "image": "https://cdn-images-1.medium.com/max/972/1*YoGg5k4FRF08FK_88x1eAA.jpeg",
+            "contractAddress": "0xf204a4ef082f5c04bb89f7d5e6568b796096735a"
+        }
+    },
+    {
+        "_index": "projectindex",
+        "_type": "project",
+        "_id": "AWZOhkX_pkTq_dXhsXKv",
+        "_score": 1,
+        "_source": {
+            "name": "BFR",
+            "description": "`Elon Musk is building a spaceship that's so ambitious that some experts are calling it 'science fiction.' Here's what SpaceX and its engineers are up against.",
+            "image": "https://www.spacex.com/sites/all/themes/spacex2012/images/mars/BFR_Clouds_A.jpg"
+        }
+    }
+]

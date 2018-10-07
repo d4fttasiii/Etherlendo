@@ -1,0 +1,17 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="/">
+    <i class="fab fa-ethereum animated tada"></i>
+    <span class="ml-1"><b>Ether</b>lendo</span>
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
+    aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item" *ngFor="let mi of menuItems">
+        <a class="nav-link" (click)="navigate(mi)">{{ mi.name }}</a>
+      </li>
+    </ul>
+  </div>
+</nav>

@@ -1,0 +1,24 @@
+<div class="container-fluid">
+  <div class="row px-5">
+    <div class="jumbotron w-100">
+      <h1 class="display-4">Hello!</h1>
+      <p class="lead">Invest in our many great projects <i class="fas fa-smile-wink animated infinite wobble ml-2"></i></p>
+      <hr class="my-4">
+    </div>
+  </div>
+
+  <div class="row mt-3 px-5" *ngIf="!loading && projects">
+    <div class="col-sm-6 col-md-3 col-lg-4 animated fadeInDown" *ngFor="let project of projects">
+      <eth-card [title]="project.name" [description]="project.description" [image]="project.image" (investClicked)="showDetails(project)"></eth-card>
+    </div>
+  </div>
+
+  <div class="row mt-3 px-5" *ngIf="!loading && !projects">
+    <p class="lead">No projects available! <i class="fas fa-frown text-danger"></i></p>
+  </div>
+
+  
+  <div class="row mt-3 px-5 text-center w-100" *ngIf="loading">
+      <p class="lead">Loading projects information <i class="fas fa-spin fa-spinner text-primary"></i></p>
+    </div>
+</div>

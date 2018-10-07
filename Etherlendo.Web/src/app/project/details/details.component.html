@@ -1,0 +1,48 @@
+<div class="container-fluid" *ngIf="project">
+
+  <div class="row px-5 animated bounceIn">
+    <div class="jumbotron w-100">
+      <h1 class="display-4">{{ project.name }}</h1>
+      <p class="lead">
+        Financing threshold: {{ project.total }} <b>ETH</b>
+      </p>
+      <p class="lead" *ngIf="project.started">
+        Funding ends: {{ fundingEndsAt | date: 'dd.MM.yyyy HH:mm:ss' }} <b>ETH</b>
+      </p>
+      <hr class="my-4" />
+      <img class="d-block w-100" [src]="project.image" />
+      <hr class="my-4" />
+      <p class="lead">{{ project.description }}</p>
+      <hr />
+      <div class="text-right">
+        <button class="btn btn-warning" type="button" (click)="openManagement()">
+          <i class="fas fa-cogs"></i>
+          <span class="ml-1">Manage</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row px-5 animated fadeIn">
+    <div class="col-8">
+      <div class="progress">
+        <div class="progress-bar" role="progressbar" [style]="'width: ' + (project.fundingEndsAt / project.total) + '%'">
+          {{ project.fundingEndsAt / project.total }} %</div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="form-group">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="1.00" aria-label="Ether" />
+          <div class="input-group-append">
+            <button class="btn btn-outline-primary" type="button" [disabled]="!project.started">
+              <i class="fas fa-money-bill"></i>
+              <span class="ml-1">Invest</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,40 @@
+<div class="container-fluid" *ngIf="project">
+
+  <div class="row px-5 animated bounceIn">
+    <div class="jumbotron w-100">
+      <h1 class="display-4">{{ project.name }}</h1>
+      <p class="lead">
+        Financing threshold: {{ project.total }} <b>ETH</b>
+      </p>
+      <p class="lead" *ngIf="project.started">
+        Funding ends: {{ fundingEndsAt | date: 'dd.MM.yyyy HH:mm:ss' }} <b>ETH</b>
+      </p>
+      <hr class="my-4" />
+      <div class="text-right">
+        <button class="btn btn-warning" type="button" [disabled]="project.started" (click)="startFunding()">
+          <i class="fas fa-cogs"></i>
+          <span class="ml-1">Start Funding</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row px-5">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">ETH Address</th>
+          <th scope="col">Invested Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td>Mark</td>
+          <td>Otto</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
