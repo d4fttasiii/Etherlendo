@@ -26,7 +26,7 @@ export class ContractService {
     let tokenContract = new this._web3.eth.Contract(tokenAbi, project.contractAddress);
     console.log(tokenContract);
 
-    tokenContract.methods.total().call().then(total => {
+    tokenContract.methods.total.call().then(total => {
       project.total = parseInt(total);
     });
 
@@ -90,6 +90,25 @@ export class ContractService {
 const tokenAbi = [
   {
     "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "interests",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
     "inputs": [],
     "name": "total",
     "outputs": [
@@ -139,6 +158,25 @@ const tokenAbi = [
     "constant": true,
     "inputs": [],
     "name": "fundedAmount",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "investments",
     "outputs": [
       {
         "name": "",
@@ -204,12 +242,6 @@ const tokenAbi = [
     "payable": false,
     "stateMutability": "view",
     "type": "function"
-  },
-  {
-    "inputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "constructor"
   },
   {
     "anonymous": false,

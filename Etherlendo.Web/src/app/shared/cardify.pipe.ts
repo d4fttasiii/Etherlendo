@@ -5,10 +5,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class CardifyPipe implements PipeTransform {
 
-  transform(value: string): string {
-    const parts = value.split('.');
-
-    return `${parts[0]}.${parts[1]}.`;
+  transform(value: string, length: number = 120): string {   
+    
+    return `${value.substring(0, length)}...`;
   }
 
 }
