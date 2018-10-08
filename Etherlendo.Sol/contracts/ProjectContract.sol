@@ -1,23 +1,20 @@
 pragma solidity ^0.4.24;
 
+
 contract ProjectContract {
 
-  address public funding;  
+
+  address public funding = this;  
   address constant public receiver = 0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef;
   uint constant public total = 50;
   uint public fundedAmount;
   uint constant public interest = 5;
   uint public projectEnd;
   enum State { Init, Running, Funded, Failed, Redemption, Closed }
-  State public state;
+  State public state = State.Init;
   mapping(address => uint) public investments;
   mapping(address => uint) public interests;
   address[] public investors;
-
-  constructor() public {
-    funding = this;
-    fundedAmount = funding.balance;
-  }
 
   event InvestedAmountIncreased(uint amount);
   event FundingSuccessful();
@@ -97,14 +94,14 @@ contract ProjectContract {
   }
 
   function transferFunds() public {       
-      require(now >= projectEnd);
-      require(state == State.Funded);
-      require(total == funding.balance);
+    require(now >= projectEnd);
+    require(state == State.Funded);
+    require(total == funding.balance);
 
-      emit FundedAmountTransfered(receiver, funding.balance);
-
-      receiver.transfer(funding.balance);
-      state = State.Redemption;
+    emit FundedAmountTransfered(receiver, funding.balance);
+    
+    receiver.transfer(funding.balance);
+    state = State.Redemption;
   }
 
   function payInterest() public payable {

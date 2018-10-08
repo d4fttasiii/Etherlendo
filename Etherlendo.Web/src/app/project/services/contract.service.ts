@@ -56,7 +56,7 @@ export class ContractService {
   public startFunding(project: Project) {
     let tokenContract = new this._web3.eth.Contract(tokenAbi, project.contractAddress);
 
-    tokenContract.methods.startProject().call().then(response => console.log('funding started'));
+    tokenContract.methods.startProject().call().then(response => console.log(response));
   }
 
   public isAddress(eth: string): boolean {
