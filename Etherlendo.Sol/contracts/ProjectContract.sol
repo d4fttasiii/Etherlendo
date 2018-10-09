@@ -4,37 +4,37 @@ pragma solidity ^0.4.24;
 contract ProjectContract {
 
 
-  address public funding = this;  
-  address constant public receiver = 0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef;
-  uint constant public total = 50;
-  uint public fundedAmount;
+  address constant public receiver = 0x83c5BBea4831900563D77f7551E09DE553170658;
+  uint constant public total = 50 ether;
   uint constant public interest = 5;
-  uint public projectEnd;
+  uint public fundedAmount;
+  uint public fundingEnd;
   enum State { Init, Running, Funded, Failed, Redemption, Closed }
   State public state = State.Init;
   mapping(address => uint) public investments;
   mapping(address => uint) public interests;
   address[] public investors;
 
-  event InvestedAmountIncreased(uint amount);
-  event FundingSuccessful();
-  event FundingFailed();
-  event FundingClosed();
-  event InvestmentWithInterestClaimed(address receiver, uint amount);
-  event FundedAmountTransfered(address receiver, uint amount);
+  // event InvestedAmountIncreased(uint amount);
+  // event FundingStarted();
+  // event FundingSuccessful();
+  // event FundingFailed();
+  // event FundingClosed();
+  // event InvestmentWithInterestClaimed(address receiver, uint amount);
+  // event FundedAmountTransfered(address receiver, uint amount);
 
   modifier verifyAmount() {
-    require(msg.value + funding.balance <= total);
+    require(address(this).balance <= total);
     _;
   }
 
-  modifier InitPhase() {
+  modifier initPhase() {
     require(state == State.Init);
     _;
   }
 
   modifier fundingPhase() {
-    require(state == State.Running && now < projectEnd);
+    require(state == State.Running && now < fundingEnd);
     _;
   }
 
@@ -48,21 +48,22 @@ contract ProjectContract {
     _;
   }
 
-  function startProject() public InitPhase {
+  function startFunding() public initPhase {
     state = State.Running;
-    projectEnd = now + 5 minutes;
+    fundingEnd = now + 5 minutes;
+    // emit FundingStarted();
   }
   
-  function getCurrentFundingBalance() view public returns(uint){
-    return funding.balance;
+  function getCurrentFundingBalance() view public returns(uint) {
+    return address(this).balance;
   }
 
   function invest() public payable verifyAmount fundingPhase {
-    emit InvestedAmountIncreased(funding.balance);
+    // emit InvestedAmountIncreased(address(this).balance);
 
     investments[msg.sender] += msg.value;
     interests[msg.sender] += (msg.value / 100 * interest);
-    fundedAmount = funding.balance;
+    fundedAmount = address(this).balance;
 
     bool alreadyInvestor = false;
     for (uint i = 0; i < investors.length; i++) {
@@ -75,32 +76,18 @@ contract ProjectContract {
       investors.push(msg.sender);
     }
 
-    if (funding.balance == total) {
-      endFunding();
-    }
-  }
-
-  function endFunding() public {
-    require(state == State.Running);
-    require(projectEnd < now || funding.balance == total);
-
-    if (funding.balance == total) {
-      state = State.Funded;
-      emit FundingSuccessful();
-    } else {
-      state = State.Failed;
-      emit FundingFailed();
-    }
+    if (address(this).balance == total) {
+        state = State.Funded;
+        // emit FundingSuccessful();
+    }    
   }
 
   function transferFunds() public {       
-    require(now >= projectEnd);
-    require(state == State.Funded);
-    require(total == funding.balance);
-
-    emit FundedAmountTransfered(receiver, funding.balance);
+    require(now >= fundingEnd || state == State.Funded);
+    require(total == address(this).balance);
     
-    receiver.transfer(funding.balance);
+    receiver.transfer(address(this).balance);
+    // emit FundedAmountTransfered(receiver, address(this).balance);
     state = State.Redemption;
   }
 
@@ -116,7 +103,7 @@ contract ProjectContract {
 
   function claimInvestedAmountWithInterest() public redemptionPhase {
 
-    require(funding.balance == total + (total / 100 * interest));
+    require(address(this).balance == total + (total / 100 * interest));
 
     for (uint i = 0; i < investors.length; i++) {
       if (investors[i] == msg.sender) {        
@@ -126,7 +113,7 @@ contract ProjectContract {
         if (!msg.sender.send(amount)) {
           interests[investors[i]] = amount;
         } else {
-          emit InvestmentWithInterestClaimed(msg.sender, amount);
+         // emit InvestmentWithInterestClaimed(msg.sender, amount);
         }
         break;
       }
@@ -141,9 +128,8 @@ contract ProjectContract {
     }
 
     if (interestPayedBack) {
-      emit FundingClosed();
+      // emit FundingClosed();
       state = State.Closed;
     }
   }
-
 }
