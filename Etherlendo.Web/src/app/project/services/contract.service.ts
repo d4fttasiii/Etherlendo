@@ -34,11 +34,11 @@ export class ContractService {
       project.interest = parseInt(interest);
     });
 
-    tokenContract.methods.projectEnd().call().then(projectEnd => {
+    tokenContract.methods.fundingEnd().call().then(projectEnd => {
       project.fundingEndsAt = new Date(parseInt(projectEnd));
     });
 
-    tokenContract.methods.fundedAmount().call().then(fundedAmount => {
+    tokenContract.method.getCurrentFundingBalance().call().then(fundedAmount => {
       project.investedAmount = parseInt(fundedAmount);
     });
 
@@ -56,7 +56,7 @@ export class ContractService {
   public startFunding(project: Project) {
     let tokenContract = new this._web3.eth.Contract(tokenAbi, project.contractAddress);
 
-    tokenContract.methods.startProject().call().then(response => console.log(response));
+    tokenContract.methods.startFunding().call().then(response => console.log(response));
   }
 
   public isAddress(eth: string): boolean {
