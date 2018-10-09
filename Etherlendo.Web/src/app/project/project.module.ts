@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 import { ProjectService } from './services/project.service';
 import { SharedModule } from '../shared/shared.module';
@@ -14,6 +15,7 @@ import { ManagementComponent } from './management/management.component';
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
     HttpClientModule,
     SharedModule,
     ProjectRoutingModule

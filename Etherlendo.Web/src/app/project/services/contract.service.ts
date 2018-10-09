@@ -10,63 +10,70 @@ declare let window: any;
 })
 export class ContractService {
 
-  private _web3: any;
+  private web3: any;
   private _account: string = null;
 
   constructor() {
     if (typeof window.web3 !== 'undefined') {
-      this._web3 = new Web3(window.web3.currentProvider);
+      this.web3 = new Web3(window.web3.currentProvider);
     } else {
-      this._web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:9545"));
+      this.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));
     }
+
+    this.getAccount().then(fromAddress => this._account = fromAddress);
   }
 
   public getProjectDetails(project: Project) {
 
-    let tokenContract = new this._web3.eth.Contract(tokenAbi, project.contractAddress);
-    console.log(tokenContract);
+    let tokenContract = new this.web3.eth.Contract(tokenAbi, project.contractAddress);
 
-    tokenContract.methods.total.call().then(total => {
+    Promise.all([
+      tokenContract.methods.total().call(),
+      tokenContract.methods.interest().call(),
+      tokenContract.methods.fundingEnd().call(),
+      tokenContract.methods.getCurrentFundingBalance().call(),
+      tokenContract.methods.state().call()
+    ]).then(responses => {
+      const [total, interest, projectEnd, fundedAmount, state] = responses;
       project.total = parseInt(total);
-    });
-
-    tokenContract.methods.interest().call().then(interest => {
       project.interest = parseInt(interest);
-    });
-
-    tokenContract.methods.fundingEnd().call().then(projectEnd => {
-      project.fundingEndsAt = new Date(parseInt(projectEnd));
-    });
-
-    tokenContract.method.getCurrentFundingBalance().call().then(fundedAmount => {
+      project.fundingEndsAt = new Date(parseInt(projectEnd) * 1000);
       project.investedAmount = parseInt(fundedAmount);
+      project.started = state == 1;
+      project.investedPercentage = (project.investedAmount / project.total) * 100;
     });
+  }
 
-    tokenContract.methods.state().call().then(state => {
-      project.started = state === 1;
-    });
+  public getInvestedAmount(contractAddress: string): Promise<number> {
+    let tokenContract = new this.web3.eth.Contract(tokenAbi, contractAddress);
+    return tokenContract.methods.getCurrentFundingBalance().call();
   }
 
   public getInvestments(project: Project): Promise<any[]> {
-    let tokenContract = new this._web3.eth.Contract(tokenAbi, project.contractAddress);
+    let tokenContract = new this.web3.eth.Contract(tokenAbi, project.contractAddress);
 
-    return tokenContract.methods.investors().call();
+    return tokenContract.methods.investors(1).call();
   }
 
-  public startFunding(project: Project) {
-    let tokenContract = new this._web3.eth.Contract(tokenAbi, project.contractAddress);
+  public startFunding(contractAddress: string, callback: (error, result) => void) {
+    let tokenContract = new this.web3.eth.Contract(tokenAbi, contractAddress);
 
-    tokenContract.methods.startFunding().call().then(response => console.log(response));
+    tokenContract.methods.startFunding().send({ from: this._account }, callback);
   }
 
   public isAddress(eth: string): boolean {
-    return this._web3.utils.isAddress(eth);
+    return this.web3.utils.isAddress(eth);
+  }
+
+  public invest(contractAddress: string, amount: number, callback: (error, result) => void) {
+    let tokenContract = new this.web3.eth.Contract(tokenAbi, contractAddress);
+    tokenContract.methods.invest().send({ from: this._account, value: this.web3.utils.toWei(amount, 'ether') }, callback);
   }
 
   private async getAccount(): Promise<string> {
     if (this._account == null) {
       this._account = await new Promise((resolve, reject) => {
-        this._web3.eth.getAccounts((err, accs) => {
+        this.web3.eth.getAccounts((err, accs) => {
           if (err != null) {
             console.error('There was an error fetching your accounts.');
             return;
@@ -80,7 +87,7 @@ export class ContractService {
         })
       }) as string;
 
-      this._web3.eth.defaultAccount = this._account;
+      this.web3.eth.defaultAccount = this._account;
     }
 
     return Promise.resolve(this._account);
@@ -97,6 +104,20 @@ const tokenAbi = [
       }
     ],
     "name": "interests",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "fundingEnd",
     "outputs": [
       {
         "name": "",
@@ -134,34 +155,6 @@ const tokenAbi = [
       {
         "name": "",
         "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "projectEnd",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "fundedAmount",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
       }
     ],
     "payable": false,
@@ -218,20 +211,6 @@ const tokenAbi = [
   {
     "constant": true,
     "inputs": [],
-    "name": "funding",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
     "name": "receiver",
     "outputs": [
       {
@@ -244,73 +223,9 @@ const tokenAbi = [
     "type": "function"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "InvestedAmountIncreased",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [],
-    "name": "FundingSuccessful",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [],
-    "name": "FundingFailed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [],
-    "name": "FundingClosed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "receiver",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "InvestmentWithInterestClaimed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "receiver",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "FundedAmountTransfered",
-    "type": "event"
-  },
-  {
     "constant": false,
     "inputs": [],
-    "name": "startProject",
+    "name": "startFunding",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -342,15 +257,6 @@ const tokenAbi = [
   {
     "constant": false,
     "inputs": [],
-    "name": "endFunding",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
     "name": "transferFunds",
     "outputs": [],
     "payable": false,
@@ -369,7 +275,7 @@ const tokenAbi = [
   {
     "constant": false,
     "inputs": [],
-    "name": "payback",
+    "name": "payLoan",
     "outputs": [],
     "payable": true,
     "stateMutability": "payable",
@@ -378,10 +284,24 @@ const tokenAbi = [
   {
     "constant": false,
     "inputs": [],
-    "name": "claimInvestedAmountWithInterest",
+    "name": "transferInvestedAmountWithInterest",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getInvestorCount",
+    "outputs": [
+      {
+        "name": "count",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
     "type": "function"
   }
 ];

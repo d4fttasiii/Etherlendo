@@ -9,4 +9,5 @@ export class Project {
     interest?: number;
     fundingEndsAt?: Date;
     investedAmount?: number;
+    investedPercentage?: number;
 }

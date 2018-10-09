@@ -10,7 +10,7 @@ contract('ProjectContract', function (accounts) {
 
       // Assert
       const receiver = await contract.receiver.call();
-      assert.equal(receiver, 0x83c5BBea4831900563D77f7551E09DE553170658, `receiver don't match, found receiver is ${receiver}`);
+      assert.equal(receiver, 0x11717003821d4851325Fe1Df2bFee86839850E7B, `receiver don't match, found receiver is ${receiver}`);
       const total = await contract.total.call();
       assert.equal(total, 50e+18, `Funding total limit doesn't match, found value: ${total}`);
       const interest = await contract.interest.call();

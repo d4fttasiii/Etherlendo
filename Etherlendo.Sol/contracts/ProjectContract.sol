@@ -4,7 +4,7 @@ pragma solidity ^0.4.24;
 contract ProjectContract {
 
 
-  address constant public receiver = 0x83c5BBea4831900563D77f7551E09DE553170658;
+  address constant public receiver = 0x11717003821d4851325Fe1Df2bFee86839850E7B;
   uint constant public total = 50 ether;
   uint constant public interest = 5;
   uint public fundingEnd;
@@ -47,17 +47,17 @@ contract ProjectContract {
     _;
   }
 
-  function startFunding() public initPhase {
+  function startFunding() external initPhase {
     state = State.Running;
     fundingEnd = now + 5 minutes;
     // emit FundingStarted();
   }
   
-  function getCurrentFundingBalance() view public returns(uint) {
+  function getCurrentFundingBalance() external view returns(uint) {
     return address(this).balance;
   }
 
-  function invest() public payable verifyAmount fundingPhase {
+  function invest() external payable verifyAmount fundingPhase {
     // emit InvestedAmountIncreased(address(this).balance);
 
     investments[msg.sender] += msg.value;
@@ -80,7 +80,7 @@ contract ProjectContract {
     }    
   }
 
-  function transferFunds() public {       
+  function transferFunds() external {       
     require(now >= fundingEnd || state == State.Funded);
     require(total == address(this).balance);
     
@@ -89,17 +89,17 @@ contract ProjectContract {
     state = State.Redemption;
   }
 
-  function payInterest() public payable {
+  function payInterest() external payable {
     require(msg.sender == receiver);
     require(msg.value == (total / 100 * interest));
   }
 
-  function payLoan() public payable {
+  function payLoan() external payable {
     require(msg.sender == receiver);
     require(msg.value == total);
   }
 
-  function transferInvestedAmountWithInterest() public redemptionPhase {
+  function transferInvestedAmountWithInterest() external redemptionPhase {
 
     require(address(this).balance == total + (total / 100 * interest));
 
@@ -131,7 +131,7 @@ contract ProjectContract {
     }
   }
 
-  function getInvestorCount() public constant returns(uint count) {
+  function getInvestorCount() external constant returns(uint count) {
     return investors.length;
   }
 }

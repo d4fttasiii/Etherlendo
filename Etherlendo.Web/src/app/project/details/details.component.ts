@@ -12,7 +12,9 @@ import { ProjectService } from '../services/project.service';
 })
 export class DetailsComponent implements OnInit {
 
+  id: string;
   project: Project;
+  amount: number;
 
   constructor(
     private projectService: ProjectService,
@@ -23,16 +25,34 @@ export class DetailsComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe(params => {
-      const id = params.id;
-      this.projectService.getProject(id).subscribe(project => {
-        this.project = project;
-        this.contractService.getProjectDetails(this.project);
-      });
+      this.id = params.id;
+      this.loadProjectInfo(this.id);
     });
   }
 
   openManagement() {
     this.router.navigate(['/projects/manage', this.project.id]);
+  }
+
+  invest() {
+    if (!this.amount) {
+      return;
+    }
+
+    this.contractService.invest(this.project.contractAddress, this.amount, (error, result) => {
+      if (error) {
+        console.log(error);
+      } else {
+        this.contractService.getProjectDetails(this.project);
+      }
+    });
+  }
+
+  private loadProjectInfo(id: string) {
+    this.projectService.getProject(id).subscribe(project => {
+      this.project = project;
+      this.contractService.getProjectDetails(this.project);
+    });
   }
 
 }

@@ -3,15 +3,21 @@
   <div class="row px-5 animated bounceIn">
     <div class="jumbotron w-100">
       <h1 class="display-4">{{ project.name }}</h1>
-      <p class="lead">
-        Financing threshold: {{ project.total }} <b>ETH</b>
-      </p>
-      <p class="lead">
+      <span class="badge badge-pill badge-primary mr-2">
+        Financing threshold: {{ project.total | ether: 'wei' }}
+      </span>
+      <span class="badge badge-pill badge-info mr-2">
         Interest rate: {{ (project.interest / 100) | percent:'1.2-2' }}
-      </p>
-      <p class="lead" *ngIf="project.started">
-        Funding ends: {{ fundingEndsAt | date: 'dd.MM.yyyy HH:mm:ss' }} <b>ETH</b>
-      </p>
+      </span>
+      <span class="badge badge-pill badge-primary mr-2" *ngIf="project.started">
+        Invested amount: {{ project.investedAmount | ether: 'wei' }}
+      </span>
+      <span class="badge badge-pill badge-warning mr-2" *ngIf="project.started">
+        Funding ends: {{ project.fundingEndsAt | date: 'dd.MM.yyyy HH:mm:ss' }}
+      </span>
+      <span class="badge badge-pill badge-warning" *ngIf="!project.started">
+        Funding hasn't started yet!
+      </span>
       <hr class="my-4" />
       <img class="d-block w-100" [src]="project.image" />
       <hr class="my-4" />
@@ -29,16 +35,16 @@
   <div class="row px-5 animated fadeIn">
     <div class="col-8">
       <div class="progress">
-        <div class="progress-bar" role="progressbar" [style]="'width: ' + (project.fundingEndsAt / project.total) + '%'">
-          {{ project.fundingEndsAt / project.total }} %</div>
+        <div class="progress-bar" role="progressbar" [ngStyle]="{'width': project.investedPercentage+'%'}">
+          {{ project.investedPercentage }} %</div>
       </div>
     </div>
     <div class="col-4">
       <div class="form-group">
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="1.00" aria-label="Ether" />
+          <input type="text" class="form-control" placeholder="1.00" aria-label="Ether" [(ngModel)]="amount" />
           <div class="input-group-append">
-            <button class="btn btn-outline-primary" type="button" [disabled]="!project.started">
+            <button class="btn btn-outline-primary" type="button" (click)="invest()">
               <i class="fas fa-money-bill"></i>
               <span class="ml-1">Invest</span>
             </button>
