@@ -7,7 +7,6 @@ contract ProjectContract {
   address constant public receiver = 0x83c5BBea4831900563D77f7551E09DE553170658;
   uint constant public total = 50 ether;
   uint constant public interest = 5;
-  uint public fundedAmount;
   uint public fundingEnd;
   enum State { Init, Running, Funded, Failed, Redemption, Closed }
   State public state = State.Init;
@@ -63,7 +62,6 @@ contract ProjectContract {
 
     investments[msg.sender] += msg.value;
     interests[msg.sender] += (msg.value / 100 * interest);
-    fundedAmount = address(this).balance;
 
     bool alreadyInvestor = false;
     for (uint i = 0; i < investors.length; i++) {
@@ -96,32 +94,32 @@ contract ProjectContract {
     require(msg.value == (total / 100 * interest));
   }
 
-  function payback() public payable {
+  function payLoan() public payable {
     require(msg.sender == receiver);
     require(msg.value == total);
   }
 
-  function claimInvestedAmountWithInterest() public redemptionPhase {
+  function transferInvestedAmountWithInterest() public redemptionPhase {
 
     require(address(this).balance == total + (total / 100 * interest));
 
     for (uint i = 0; i < investors.length; i++) {
-      if (investors[i] == msg.sender) {        
-        uint amount = interests[investors[i]];
-        interests[investors[i]] = 0;
+      uint interestAmount = interests[investors[i]];
+      uint investmentAmount = investments[investors[i]];
 
-        if (!msg.sender.send(amount)) {
-          interests[investors[i]] = amount;
-        } else {
+      if (!investors[i].send(interestAmount + investmentAmount)) {
+        interests[investors[i]] = interestAmount;
+        investments[investors[i]] = investmentAmount;
+      } else {
+        investments[investors[i]] = 0;
+        interests[investors[i]] = 0;
          // emit InvestmentWithInterestClaimed(msg.sender, amount);
-        }
-        break;
       }
     }
 
     bool interestPayedBack = true;
     for (uint j = 0; j < investors.length; j++) {
-      if (interests[investors[i]] != 0) {
+      if (interests[investors[j]] != 0) {
         interestPayedBack = false;
         break;
       }
@@ -131,5 +129,9 @@ contract ProjectContract {
       // emit FundingClosed();
       state = State.Closed;
     }
+  }
+
+  function getInvestorCount() public constant returns(uint count) {
+    return investors.length;
   }
 }
