@@ -17,15 +17,22 @@ namespace Etherlendo.API.Services
             _client = new ElasticLiteClient(options.Value.ElasticSearchAddress);
         }
 
-        public IEnumerable<Project> GetAll() => 
+        public IEnumerable<Project> GetAll() =>
             Search.In(IndexName)
                   .Return<Project>()
                   .ExecuteWith(_client);
 
-        public Project Get(string id) => 
+        public Project Get(string id) =>
             ElasticSearchLite.NetCore.Queries.Get.FromIndex(IndexName)
                 .Return<Project>(TypeName)
                 .ById(id)
                 .ExecuteWith(_client);
+
+        public string Put(Project project)
+        {
+            Index.Document(project).ExecuteWith(_client);
+
+            return project.Id;
+        }
     }
 }

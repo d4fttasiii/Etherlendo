@@ -4,7 +4,7 @@ pragma solidity ^0.4.24;
 contract ProjectContract {
 
 
-  address constant public receiver = 0x11717003821d4851325Fe1Df2bFee86839850E7B;
+  address constant public receiver = 0xcC6045d315375f2C26F6814BdC920F3ECF0b34A5;
   uint constant public total = 50 ether;
   uint constant public interest = 5;
   uint public fundingEnd;
@@ -49,7 +49,7 @@ contract ProjectContract {
 
   function startFunding() external initPhase {
     state = State.Running;
-    fundingEnd = now + 5 minutes;
+    fundingEnd = now + 1 days;
     // emit FundingStarted();
   }
   

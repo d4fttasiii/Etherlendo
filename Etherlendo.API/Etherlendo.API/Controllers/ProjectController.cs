@@ -48,5 +48,19 @@ namespace Etherlendo.API.Controllers
                 throw;
             }
         }
+
+        [HttpPut]
+        public ActionResult<string> Put(Project project)
+        {
+            try
+            {
+                return _service.Put(project);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

@@ -23,25 +23,21 @@ export class ContractService {
     this.getAccount().then(fromAddress => this._account = fromAddress);
   }
 
-  public getProjectDetails(project: Project) {
+  public getProjectDetails(contractAddress: string): Promise<[any, any, any, any, any]> {
 
-    let tokenContract = new this.web3.eth.Contract(tokenAbi, project.contractAddress);
+    if (!contractAddress) {
+      console.error(`No contract addrees given!`);
+    }
 
-    Promise.all([
+    let tokenContract = new this.web3.eth.Contract(tokenAbi, contractAddress);
+
+    return Promise.all([
       tokenContract.methods.total().call(),
       tokenContract.methods.interest().call(),
       tokenContract.methods.fundingEnd().call(),
       tokenContract.methods.getCurrentFundingBalance().call(),
       tokenContract.methods.state().call()
-    ]).then(responses => {
-      const [total, interest, projectEnd, fundedAmount, state] = responses;
-      project.total = parseInt(total);
-      project.interest = parseInt(interest);
-      project.fundingEndsAt = new Date(parseInt(projectEnd) * 1000);
-      project.investedAmount = parseInt(fundedAmount);
-      project.started = state == 1;
-      project.investedPercentage = (project.investedAmount / project.total) * 100;
-    });
+    ]);
   }
 
   public getInvestedAmount(contractAddress: string): Promise<number> {
@@ -59,6 +55,12 @@ export class ContractService {
     let tokenContract = new this.web3.eth.Contract(tokenAbi, contractAddress);
 
     tokenContract.methods.startFunding().send({ from: this._account }, callback);
+  }
+
+  public transferToReceiver(contractAddress: string) : Promise<any> {
+    let tokenContract = new this.web3.eth.Contract(tokenAbi, contractAddress);
+
+    return tokenContract.methods.transferFunds().send({ from: this._account });
   }
 
   public isAddress(eth: string): boolean {

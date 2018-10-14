@@ -30,9 +30,12 @@
               "node_modules/bootstrap/scss/bootstrap.scss",
               "node_modules/@fortawesome/fontawesome-free/css/all.css",
               "node_modules/animate.css/animate.css",
+              "node_modules/izitoast/dist/css/iziToast.min.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/izitoast/dist/js/iziToast.min.js"
+            ]
           },
           "configurations": {
             "production": {

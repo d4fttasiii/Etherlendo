@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Ng2IzitoastService } from 'ng2-izitoast';
 
 import { Project } from '../models/project';
 import { ContractService } from '../services/contract.service';
@@ -15,12 +16,14 @@ export class DetailsComponent implements OnInit {
   id: string;
   project: Project;
   amount: number;
+  investedPercentage: number;
 
   constructor(
     private projectService: ProjectService,
     private router: Router,
     private route: ActivatedRoute,
-    private contractService: ContractService
+    private contractService: ContractService,
+    private iziToast : Ng2IzitoastService
   ) { }
 
   ngOnInit() {
@@ -39,11 +42,12 @@ export class DetailsComponent implements OnInit {
       return;
     }
 
-    this.contractService.invest(this.project.contractAddress, this.amount, (error, result) => {
+    this.projectService.invest(this.project.contractAddress, this.amount, (error, result) => {
       if (error) {
-        console.log(error);
+        this.iziToast.error(error);
       } else {
-        this.contractService.getProjectDetails(this.project);
+        this.loadProjectDetails();
+        this.iziToast.success({ message: result, title: 'Invesment successful' });
       }
     });
   }
@@ -51,7 +55,21 @@ export class DetailsComponent implements OnInit {
   private loadProjectInfo(id: string) {
     this.projectService.getProject(id).subscribe(project => {
       this.project = project;
-      this.contractService.getProjectDetails(this.project);
+      this.loadProjectDetails();
+    });
+  }
+
+  private loadProjectDetails() {
+    this.contractService.getProjectDetails(this.project.contractAddress).then(responses => {
+      const [total, interest, projectEnd, fundedAmount, state] = responses;
+      this.project.total = parseInt(total);
+      this.project.interest = parseInt(interest);
+      this.project.fundingEndsAt = new Date(parseInt(projectEnd) * 1000);
+      this.project.investedAmount = parseInt(fundedAmount);
+      this.project.started = state == 1;
+      this.project.state = state;
+      this.project.investedPercentage = (this.project.investedAmount / this.project.total) * 100;
+      this.investedPercentage = this.project.investedPercentage;
     });
   }
 

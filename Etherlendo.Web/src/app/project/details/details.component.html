@@ -1,6 +1,6 @@
 <div class="container-fluid" *ngIf="project">
 
-  <div class="row px-5 animated bounceIn">
+  <div class="row px-5 animated fadeIn">
     <div class="jumbotron w-100">
       <h1 class="display-4">{{ project.name }}</h1>
       <span class="badge badge-pill badge-primary mr-2">
@@ -12,11 +12,17 @@
       <span class="badge badge-pill badge-primary mr-2" *ngIf="project.started">
         Invested amount: {{ project.investedAmount | ether: 'wei' }}
       </span>
-      <span class="badge badge-pill badge-warning mr-2" *ngIf="project.started">
+      <span class="badge badge-pill badge-warning mr-2" *ngIf="project.state == 1">
         Funding ends: {{ project.fundingEndsAt | date: 'dd.MM.yyyy HH:mm:ss' }}
       </span>
-      <span class="badge badge-pill badge-warning" *ngIf="!project.started">
+      <span class="badge badge-pill badge-warning" *ngIf="project.state == 0">
         Funding hasn't started yet!
+      </span>
+      <span class="badge badge-pill badge-success" *ngIf="project.state == 2">
+        Funding successful!
+      </span>
+      <span class="badge badge-pill badge-danger" *ngIf="project.state == 4">
+        Funding in redemption!
       </span>
       <hr class="my-4" />
       <img class="d-block w-100" [src]="project.image" />
@@ -35,7 +41,7 @@
   <div class="row px-5 animated fadeIn">
     <div class="col-8">
       <div class="progress">
-        <div class="progress-bar" role="progressbar" [ngStyle]="{'width': project.investedPercentage+'%'}">
+        <div class="progress-bar" role="progressbar" [ngStyle]="{'width': investedPercentage + '%'}">
           {{ project.investedPercentage }} %</div>
       </div>
     </div>
@@ -45,7 +51,7 @@
           <input type="text" class="form-control" placeholder="1.00" aria-label="Ether" [(ngModel)]="amount" />
           <div class="input-group-append">
             <button class="btn btn-outline-primary" type="button" (click)="invest()">
-              <i class="fas fa-money-bill"></i>
+              <i class="fas fa-piggy-bank"></i>
               <span class="ml-1">Invest</span>
             </button>
           </div>

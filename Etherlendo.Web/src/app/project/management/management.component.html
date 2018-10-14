@@ -9,7 +9,7 @@
       <p class="lead">
         Interest rate: <b>{{ (project.interest / 100) | percent:'1.2-2' }}</b>
       </p>
-      <p class="lead"  *ngIf="project.started">
+      <p class="lead" *ngIf="project.started">
         Invested amount: <b>{{ project.investedAmount | ether: 'wei' }}</b>
       </p>
       <p class="lead" *ngIf="project.started">
@@ -17,8 +17,12 @@
       </p>
       <hr class="my-4" />
       <div class="text-right">
-        <button class="btn btn-warning" type="button" [disabled]="project.started" (click)="startFunding()">
-          <i class="fas fa-cogs"></i>
+        <button class="btn btn-warning mr-3" [disabled]="project.state != 2" (click)="transferToReceiver()">
+          <i class="fas fa-hand-holding-usd"></i>
+          <span class="ml-1">Transfer to the receiver</span>
+        </button>
+        <button class="btn btn-primary" type="button" [disabled]="project.state != 0" (click)="startFunding()">
+          <i class="fas fa-play"></i>
           <span class="ml-1">Start Funding</span>
         </button>
       </div>
