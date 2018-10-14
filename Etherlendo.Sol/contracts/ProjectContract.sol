@@ -4,7 +4,7 @@ pragma solidity ^0.4.24;
 contract ProjectContract {
 
 
-  address constant public receiver = 0xcC6045d315375f2C26F6814BdC920F3ECF0b34A5;
+  address constant public receiver = 0x4FE35e4051D5Ba164eD2738B6ebC7083A4953B62;
   uint constant public total = 50 ether;
   uint constant public interest = 5;
   uint public fundingEnd;

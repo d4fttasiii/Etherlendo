@@ -41,16 +41,17 @@
   <div class="row px-5 animated fadeIn">
     <div class="col-8">
       <div class="progress">
-        <div class="progress-bar" role="progressbar" [ngStyle]="{'width': investedPercentage + '%'}">
-          {{ project.investedPercentage }} %</div>
+        <div class="progress-bar" role="progressbar" [ngStyle]="{'width': (project.state == 1 ? project.investedPercentage : 100) + '%'}">
+          {{ (project.state == 1 ? project.investedPercentage : 100) }} %</div>
       </div>
     </div>
     <div class="col-4">
       <div class="form-group">
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="1.00" aria-label="Ether" [(ngModel)]="amount" />
+          <input type="text" class="form-control" placeholder="1.00" aria-label="Ether" [disabled]="project.state != 1"
+            [(ngModel)]="amount" />
           <div class="input-group-append">
-            <button class="btn btn-outline-primary" type="button" (click)="invest()">
+            <button class="btn btn-outline-primary" type="button" [disabled]="project.state != 1" (click)="invest()">
               <i class="fas fa-piggy-bank"></i>
               <span class="ml-1">Invest</span>
             </button>

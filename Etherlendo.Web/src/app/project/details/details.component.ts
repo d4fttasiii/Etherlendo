@@ -16,7 +16,6 @@ export class DetailsComponent implements OnInit {
   id: string;
   project: Project;
   amount: number;
-  investedPercentage: number;
 
   constructor(
     private projectService: ProjectService,
@@ -69,7 +68,6 @@ export class DetailsComponent implements OnInit {
       this.project.started = state == 1;
       this.project.state = state;
       this.project.investedPercentage = (this.project.investedAmount / this.project.total) * 100;
-      this.investedPercentage = this.project.investedPercentage;
     });
   }
 
